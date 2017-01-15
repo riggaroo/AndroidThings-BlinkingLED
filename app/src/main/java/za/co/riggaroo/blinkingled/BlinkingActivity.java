@@ -25,16 +25,16 @@ public class BlinkingActivity extends Activity {
         setContentView(R.layout.activity_blinking);
 
         PeripheralManagerService service = new PeripheralManagerService();
+        String gpioPinName = BoardDefaults.getGPIOForLED();
         try {
-            String gpioPinName = BoardDefaults.getGPIOForLED();
             ledGpio = service.openGpio(gpioPinName);
-
             ledGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
 
             blinkingLedHandler.post(blinkingRunnable);
         } catch (IOException e) {
-            Log.e(TAG, "Error on PeripheralIO API", e);
+            throw new RuntimeException("Problem connecting to IO Port", e);
         }
+
     }
 
     @Override
@@ -43,12 +43,10 @@ public class BlinkingActivity extends Activity {
 
         blinkingLedHandler.removeCallbacks(blinkingRunnable);
 
-        if (ledGpio != null) {
-            try {
-                ledGpio.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Error on PeripheralIO API", e);
-            }
+        try {
+            ledGpio.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error on PeripheralIO API", e);
         }
     }
 
