@@ -53,10 +53,6 @@ public class BlinkingActivity extends Activity {
     private Runnable blinkingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (ledGpio == null) {
-                return;
-            }
-
             try {
                 ledGpio.setValue(!ledGpio.getValue());
 
